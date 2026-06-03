@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Générateur de Carte de Résidence</title>
+    <title>Sistèm Kat Rezidans ak Ekspòtasyon PDF</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
         /* --- ESTIL JENERAL --- */
         body {
@@ -25,6 +28,7 @@
             gap: 40px;
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             padding: 30px;
             border-radius: 24px;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -90,11 +94,39 @@
             gap: 15px;
         }
 
+        /* Bouton PDF la */
+        .pdf-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(45deg, #4cd137, #44bd32);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(76, 209, 55, 0.3);
+            transition: 0.2s ease;
+        }
+
+        .pdf-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+
         /* --- STIL POU KAT REZIDANS LAN --- */
         .card-section {
             display: flex;
             flex-direction: column;
             align-items: center;
+        }
+
+        /* Zòn limit kote n ap pran pou PDF la sèlman */
+        #pdf-area {
+            padding: 10px;
+            background: transparent;
         }
 
         .residence-card {
@@ -110,6 +142,7 @@
             color: #1e272e;
         }
 
+        /* Test sekirite nan fon kat la */
         .residence-card::before {
             content: "RÉSIDENT";
             position: absolute;
@@ -138,6 +171,7 @@
             text-transform: uppercase;
             color: #2c3e50;
             letter-spacing: 1px;
+            font-weight: bold;
         }
 
         .card-header h2 {
@@ -239,8 +273,8 @@
     <div class="main-wrapper">
         
         <div class="form-section">
-            <h2>Fòmilè Kat</h2>
-            <p>Ranpli espas sa yo pou jenere kat la:</p>
+            <h2>Kreyasyon Kat</h2>
+            <p>Ranpli jaden sa yo pou kreye kat la:</p>
             
             <div class="input-group">
                 <label>Nom (Siyati)</label>
@@ -272,56 +306,60 @@
             </div>
 
             <div class="input-group">
-                <label>Foto (Link/URL)</label>
+                <label>Foto (Kole lyen/URL foto a)</label>
                 <input type="text" id="inputFoto" value="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQz0TuHToiNWnU1Rbr8ARH2PyhuQf4bHY0DuzbdB2h2vg&s=10" oninput="updateCard()">
             </div>
+
+            <button class="pdf-btn" onclick="downloadPDF()">Telechaje epi Voye PDF</button>
         </div>
 
         <div class="card-section">
-            <div class="residence-card">
-                <div class="card-header">
-                    <h1>République Démocratique du Congo</h1>
-                    <h2>CARTE DE RÉSIDENCE</h2>
-                </div>
-
-                <div class="card-body">
-                    <div class="photo-area">
-                        <img class="user-img" id="cardPhoto" src="" alt="Foto">
-                        <div class="sign-area" id="cardSign"></div>
+            <div id="pdf-area">
+                <div class="residence-card">
+                    <div class="card-header">
+                        <h1>République Démocratique du Congo</h1>
+                        <h2>CARTE DE RÉSIDENCE</h2>
                     </div>
 
-                    <div class="info-area">
-                        <div class="data-box">
-                            <span class="field-title">Nom / Surname</span>
-                            <span class="field-value" id="cardNom"></span>
+                    <div class="card-body">
+                        <div class="photo-area">
+                            <img class="user-img" id="cardPhoto" src="" alt="Foto" crossOrigin="anonymous">
+                            <div class="sign-area" id="cardSign"></div>
                         </div>
-                        
-                        <div class="data-box">
-                            <span class="field-title">Prénom / Given Names</span>
-                            <span class="field-value" id="cardPrenom"></span>
-                        </div>
+
+                        <div class="info-area">
+                            <div class="data-box">
+                                <span class="field-title">Nom / Surname</span>
+                                <span class="field-value" id="cardNom"></span>
+                            </div>
+                            
+                            <div class="data-box">
+                                <span class="field-title">Prénom / Given Names</span>
+                                <span class="field-value" id="cardPrenom"></span>
+                            </div>
 
                         <div class="row-inline">
-                            <div class="data-box">
-                                <span class="field-title">Nationalité / Nationality</span>
-                                <span class="field-value" id="cardNationalite"></span>
+                                <div class="data-box">
+                                    <span class="field-title">Nationalité / Nationality</span>
+                                    <span class="field-value" id="cardNationalite"></span>
+                                </div>
+                                <div class="data-box">
+                                    <span class="field-title">Sexe / Sex</span>
+                                    <span class="field-value" id="cardSexe"></span>
+                                </div>
                             </div>
-                            <div class="data-box">
-                                <span class="field-title">Sexe / Sex</span>
-                                <span class="field-value" id="cardSexe"></span>
-                            </div>
-                        </div>
 
-                        <div class="data-box">
-                            <span class="field-title">Date de Naissance / Date of Birth</span>
-                            <span class="field-value" id="cardNaissance"></span>
+                            <div class="data-box">
+                                <span class="field-title">Date de Naissance / Date of Birth</span>
+                                <span class="field-value" id="cardNaissance"></span>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="card-footer">
-                    <div><span style="color: #7f8c8d;">Expire le:</span> <b style="color: #2c3e50;">02/06/2028</b></div>
-                    <div class="id-number">N° RE-849201-HT</div>
+                    <div class="card-footer">
+                        <div><span style="color: #7f8c8d;">Expire le:</span> <b style="color: #2c3e50;">02/06/2028</b></div>
+                        <div class="id-number">N° RE-849201-HT</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -329,8 +367,8 @@
     </div>
 
     <script>
+        // Fonksyon k ap mete done yo sou kat la an dirèk
         function updateCard() {
-            // Pran sa k nan input yo
             const nom = document.getElementById("inputNom").value;
             const prenom = document.getElementById("inputPrenom").value;
             const nat = document.getElementById("inputNationalite").value;
@@ -338,7 +376,6 @@
             const naissance = document.getElementById("inputNaissance").value;
             const foto = document.getElementById("inputFoto").value;
 
-            // Mete yo nan kat la otomatikman
             document.getElementById("cardNom").innerText = nom;
             document.getElementById("cardPrenom").innerText = prenom;
             document.getElementById("cardNationalite").innerText = nat;
@@ -346,7 +383,6 @@
             document.getElementById("cardNaissance").innerText = naissance;
             document.getElementById("cardPhoto").src = foto;
             
-            // Dinamikman kreye yon ti siyati ak premye lèt yo
             if(prenom || nom) {
                 document.getElementById("cardSign").innerText = prenom + "." + nom.substring(0,1);
             } else {
@@ -354,7 +390,26 @@
             }
         }
 
-        // Louvri paj la ak done ki deja ladan yo pa defo
+        // Fonksyon k ap konvèti kat la an PDF pou moun nan ka voye l ba ou
+        function downloadPDF() {
+            const element = document.getElementById('pdf-area');
+            const nomMoun = document.getElementById("inputNom").value || "Rezidan";
+            const prenomMoun = document.getElementById("inputPrenom").value || "";
+
+            // Paramèt pou rann kat la pwòp nan fòma PDF san fòmilè a pa parèt ladan l
+            const opt = {
+                margin:       0.2,
+                filename:     `Kat_Residence_${prenomMoun}_${nomMoun}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 3, useCORS: true }, // scale 3 bay gwo klète (HD)
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+            };
+
+            // Lanse kreyasyon ak telechajman dokiman an
+            html2pdf().set(opt).from(element).save();
+        }
+
+        // Lanse premye chajman an otomatikman
         window.onload = updateCard;
     </script>
 
