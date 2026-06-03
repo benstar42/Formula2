@@ -1,443 +1,362 @@
 <!DOCTYPE html>
-<html lang="ht">
+<html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Diksyonè Kreyòl → Español</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Carte de Résidence</title>
+    <style>
+        /* --- ESTIL JENERAL --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle, #1e272e 0%, #0f141c 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: #fff;
+            box-sizing: border-box;
+        }
 
-<style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
-}
+        .main-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            padding: 30px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
 
-body{
-background:#edf2f7;
-padding-bottom:100px;
-color:#222;
-}
+        /* --- STIL POU FÒMILÈ A --- */
+        .form-section {
+            width: 360px;
+        }
 
-header{
-background:linear-gradient(135deg,#007bff,#00b894);
-color:white;
-text-align:center;
-padding:18px;
-font-size:22px;
-font-weight:bold;
-}
+        .form-section h2 {
+            margin: 0 0 5px 0;
+            font-size: 24px;
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-.sub{font-size:13px;opacity:0.9;margin-top:5px;}
+        .form-section p {
+            font-size: 13px;
+            color: #8a99ad;
+            margin-bottom: 20px;
+        }
 
-.container{padding:15px;}
+        .input-group {
+            margin-bottom: 15px;
+        }
 
-.form-box{
-background:white;
-padding:15px;
-border-radius:15px;
-margin-bottom:15px;
-box-shadow:0 2px 8px rgba(0,0,0,0.1);
-}
+        .input-group label {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #00d2ff;
+            margin-bottom: 6px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
 
-input{
-width:100%;
-padding:12px;
-margin-top:8px;
-border-radius:10px;
-border:1px solid #ddd;
-font-size:16px;
-}
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
 
-button{
-margin-top:10px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-font-weight:bold;
-}
+        .input-group input:focus, .input-group select:focus {
+            border-color: #00d2ff;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 8px rgba(0, 210, 255, 0.2);
+        }
 
-.add-btn{
-background:#00b894;
-color:white;
-width:100%;
-padding:12px;
-}
+        .row-inline {
+            display: flex;
+            gap: 15px;
+        }
 
-/* SEARCH */
-.search-box{
-background:white;
-padding:12px;
-border-radius:15px;
-margin-bottom:15px;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
-}
+        /* --- STIL POU KAT REZIDANS LAN --- */
+        .card-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-/* 📊 stats */
-.stats{
-display:flex;
-justify-content:space-between;
-background:white;
-padding:12px;
-border-radius:15px;
-margin-bottom:15px;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
-}
+        .residence-card {
+            width: 500px;
+            height: 300px;
+            background: linear-gradient(135deg, #ffffff 0%, #e3e9ed 100%);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+            border: 2px solid #2c3e50;
+            color: #1e272e;
+        }
 
-.stat{text-align:center;}
-.stat h3{color:#007bff;}
+        .residence-card::before {
+            content: "RÉSIDENT";
+            position: absolute;
+            font-size: 55px;
+            font-weight: 900;
+            color: rgba(44, 62, 80, 0.03);
+            transform: rotate(-20deg);
+            top: 35%;
+            left: 10%;
+            z-index: 1;
+            pointer-events: none;
+        }
 
-/* 📑 tabs */
-.tabs{
-display:flex;
-gap:8px;
-margin-bottom:15px;
-}
+        .card-header {
+            text-align: center;
+            border-bottom: 2px double #2c3e50;
+            padding-bottom: 6px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
 
-.tab{
-flex:1;
-padding:10px;
-background:#dfe6e9;
-border-radius:10px;
-text-align:center;
-font-weight:bold;
-cursor:pointer;
-}
+        .card-header h1 {
+            font-size: 16px;
+            margin: 0;
+            text-transform: uppercase;
+            color: #2c3e50;
+            letter-spacing: 1px;
+        }
 
-.active{background:#007bff;color:white;}
+        .card-header h2 {
+            font-size: 11px;
+            margin: 3px 0 0 0;
+            color: #3a7bd5;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
 
-/* 📦 cards */
-.card{
-background:white;
-padding:15px;
-border-radius:15px;
-margin-bottom:10px;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
-position:relative;
-}
+        .card-body {
+            display: flex;
+            gap: 20px;
+            position: relative;
+            z-index: 2;
+        }
 
-/* MO ESPANYÒL */
-.translation{
-margin-top:8px;
-color:#007bff;
-font-size:26px;
-font-weight:bold;
-text-align:center;
-}
+        .photo-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-/* MO KREYÒL */
-.word{
-font-size:20px;
-font-weight:bold;
-color:#333;
-text-align:center;
-}
+        .user-img {
+            width: 110px;
+            height: 130px;
+            object-fit: cover;
+            border: 2px solid #2c3e50;
+            border-radius: 6px;
+            background-color: #eef2f3;
+        }
 
-.actions{
-display:flex;
-gap:10px;
-margin-top:10px;
-flex-wrap:wrap;
-}
+        .sign-area {
+            margin-top: 8px;
+            width: 110px;
+            height: 28px;
+            border: 1px dashed #7f8c8d;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #2c3e50;
+            font-style: italic;
+            font-weight: bold;
+        }
 
-/* 🔊 */
-.sound-btn{
-background:#ff9500;
-color:white;
-padding:14px 18px;
-font-size:16px;
-border-radius:12px;
-font-weight:bold;
-flex:1;
-min-width:90px;
-}
+        .info-area {
+            flex-grow: 1;
+            display: grid;
+            grid-template-columns: 1fr;
+            row-gap: 6px;
+        }
 
-/* 📚 */
-.learn-btn{
-background:#00b894;
-color:white;
-padding:14px 18px;
-font-size:16px;
-border-radius:12px;
-font-weight:bold;
-flex:1;
-min-width:90px;
-}
+        .data-box {
+            display: flex;
+            flex-direction: column;
+        }
 
-/* BACK */
-.back-btn{
-background:#6c5ce7;
-color:white;
-padding:12px;
-border-radius:10px;
-font-weight:bold;
-flex:1;
-min-width:90px;
-}
+        .field-title {
+            font-size: 9px;
+            text-transform: uppercase;
+            color: #7f8c8d;
+            font-weight: bold;
+        }
 
-/* DELETE sou anlè */
-.delete-btn{
-background:#e74c3c;
-color:white;
-padding:6px 10px;
-font-size:12px;
-border-radius:8px;
-font-weight:bold;
-position:absolute;
-top:8px;
-right:8px;
-}
+        .field-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2c3e50;
+            text-transform: uppercase;
+        }
 
-.preview{
-margin-top:8px;
-color:#007bff;
-font-weight:bold;
-}
-</style>
+        .card-footer {
+            position: absolute;
+            bottom: 15px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            padding-top: 8px;
+            font-size: 11px;
+            z-index: 2;
+        }
+
+        .id-number {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            font-weight: bold;
+            color: #ff4757;
+        }
+    </style>
 </head>
-
 <body>
 
-<header>
-📘  Kreyòl → Español 
-<div class="sub"> Bensia Souffrant • Aprann • Reaprann • Pataje</div>
-</header>
+    <div class="main-wrapper">
+        
+        <div class="form-section">
+            <h2>Fòmilè Kat</h2>
+            <p>Ranpli espas sa yo pou jenere kat la:</p>
+            
+            <div class="input-group">
+                <label>Nom (Siyati)</label>
+                <input type="text" id="inputNom" value="Souffrant" oninput="updateCard()">
+            </div>
+            
+            <div class="input-group">
+                <label>Prénom (Non)</label>
+                <input type="text" id="inputPrenom" value="Robes" oninput="updateCard()">
+            </div>
 
-<div class="container">
+            <div class="row-inline">
+                <div class="input-group" style="flex: 1;">
+                    <label>Nationalité</label>
+                    <input type="text" id="inputNationalite" value="HT" oninput="updateCard()">
+                </div>
+                <div class="input-group" style="flex: 1;">
+                    <label>Sexe</label>
+                    <select id="inputSexe" onchange="updateCard()">
+                        <option value="M">Gason (M)</option>
+                        <option value="F">Fi (F)</option>
+                    </select>
+                </div>
+            </div>
 
-<div class="form-box">
-<h3>➕ Ajoute nouvo mo</h3>
+            <div class="input-group">
+                <label>Date de Naissance</label>
+                <input type="text" id="inputNaissance" value="10 Janvier 1995" oninput="updateCard()">
+            </div>
 
-<input id="kreyolInput" placeholder="Mo kreyòl">
-<div id="preview" class="preview"></div>
+            <div class="input-group">
+                <label>Foto (Link/URL)</label>
+                <input type="text" id="inputFoto" value="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQz0TuHToiNWnU1Rbr8ARH2PyhuQf4bHY0DuzbdB2h2vg&s=10" oninput="updateCard()">
+            </div>
+        </div>
 
-<input id="espInput" placeholder="Traduction espagnol">
+        <div class="card-section">
+            <div class="residence-card">
+                <div class="card-header">
+                    <h1>République Démocratique du Congo</h1>
+                    <h2>CARTE DE RÉSIDENCE</h2>
+                </div>
 
-<button class="add-btn" onclick="addWord()">💾 Ajoute</button>
-</div>
+                <div class="card-body">
+                    <div class="photo-area">
+                        <img class="user-img" id="cardPhoto" src="" alt="Foto">
+                        <div class="sign-area" id="cardSign"></div>
+                    </div>
 
-<div class="search-box">
-<input id="searchInput" placeholder="🔍 Chèche yon mo..." oninput="render()">
-</div>
+                    <div class="info-area">
+                        <div class="data-box">
+                            <span class="field-title">Nom / Surname</span>
+                            <span class="field-value" id="cardNom"></span>
+                        </div>
+                        
+                        <div class="data-box">
+                            <span class="field-title">Prénom / Given Names</span>
+                            <span class="field-value" id="cardPrenom"></span>
+                        </div>
 
-<div class="stats">
-<div class="stat">
-<h3 id="storeCount">0</h3>
-<p>Magazen</p>
-</div>
-<div class="stat">
-<h3 id="learningCount">0</h3>
-<p>Aprann</p>
-</div>
-<div class="stat">
-<h3 id="knownCount">0</h3>
-<p>Konnen</p>
-</div>
-</div>
+                        <div class="row-inline">
+                            <div class="data-box">
+                                <span class="field-title">Nationalité / Nationality</span>
+                                <span class="field-value" id="cardNationalite"></span>
+                            </div>
+                            <div class="data-box">
+                                <span class="field-title">Sexe / Sex</span>
+                                <span class="field-value" id="cardSexe"></span>
+                            </div>
+                        </div>
 
-<div class="tabs">
-<div class="tab active" onclick="show('store')">📚 Magazen</div>
-<div class="tab" onclick="show('learning')">🧠 Aprann</div>
-<div class="tab" onclick="show('known')">✅ Konnen</div>
-</div>
+                        <div class="data-box">
+                            <span class="field-title">Date de Naissance / Date of Birth</span>
+                            <span class="field-value" id="cardNaissance"></span>
+                        </div>
+                    </div>
+                </div>
 
-<div id="store"></div>
-<div id="learning" style="display:none"></div>
-<div id="known" style="display:none"></div>
+                <div class="card-footer">
+                    <div><span style="color: #7f8c8d;">Expire le:</span> <b style="color: #2c3e50;">02/06/2028</b></div>
+                    <div class="id-number">N° RE-849201-HT</div>
+                </div>
+            </div>
+        </div>
 
-</div>
+    </div>
 
-<script>
+    <script>
+        function updateCard() {
+            // Pran sa k nan input yo
+            const nom = document.getElementById("inputNom").value;
+            const prenom = document.getElementById("inputPrenom").value;
+            const nat = document.getElementById("inputNationalite").value;
+            const sexe = document.getElementById("inputSexe").value;
+            const naissance = document.getElementById("inputNaissance").value;
+            const foto = document.getElementById("inputFoto").value;
 
-let store = JSON.parse(localStorage.getItem("store")) || [
-{kreyol:"bonjou",espanol:"hola"}
-];
+            // Mete yo nan kat la otomatikman
+            document.getElementById("cardNom").innerText = nom;
+            document.getElementById("cardPrenom").innerText = prenom;
+            document.getElementById("cardNationalite").innerText = nat;
+            document.getElementById("cardSexe").innerText = sexe;
+            document.getElementById("cardNaissance").innerText = naissance;
+            document.getElementById("cardPhoto").src = foto;
+            
+            // Dinamikman kreye yon ti siyati ak premye lèt yo
+            if(prenom || nom) {
+                document.getElementById("cardSign").innerText = prenom + "." + nom.substring(0,1);
+            } else {
+                document.getElementById("cardSign").innerText = "Signature";
+            }
+        }
 
-let learning = JSON.parse(localStorage.getItem("learning")) || [];
-let known = JSON.parse(localStorage.getItem("known")) || [];
-
-let verbs = [
-{kreyol:"manje",espanol:"comer"},
-{kreyol:"bwè",espanol:"beber"},
-{kreyol:"dòmi",espanol:"dormir"},
-{kreyol:"kouri",espanol:"correr"}
-];
-
-if(store.length < 5){
-store = store.concat(verbs);
-}
-
-function save(){
-localStorage.setItem("store",JSON.stringify(store));
-localStorage.setItem("learning",JSON.stringify(learning));
-localStorage.setItem("known",JSON.stringify(known));
-updateStats();
-}
-
-function addWord(){
-let k = kreyolInput.value.trim();
-let e = espInput.value.trim();
-
-if(!k || !e){
-alert("Ranpli 2 chan yo !");
-return;
-}
-
-store.unshift({kreyol:k,espanol:e});
-kreyolInput.value="";
-espInput.value="";
-preview.innerText="";
-save();
-render();
-}
-
-async function translateKreyol(text){
-try{
-let url="https://translate.googleapis.com/translate_a/single?client=gtx&sl=ht&tl=es&dt=t&q="+encodeURIComponent(text);
-let res=await fetch(url);
-let data=await res.json();
-return data?.[0]?.map(i=>i[0]).join("") || "";
-}catch(e){return "";}
-}
-
-kreyolInput.addEventListener("input", async ()=>{
-let text = kreyolInput.value.trim();
-
-if(text.length < 2){
-preview.innerText="";
-return;
-}
-
-preview.innerText="⏳ Tradiksyon...";
-let result = await translateKreyol(text);
-
-if(result){
-preview.innerText="🇪🇸 "+result;
-espInput.value=result;
-}else{
-preview.innerText="❌ Pa jwenn";
-}
-});
-
-function updateStats(){
-storeCount.innerText=store.length;
-learningCount.innerText=learning.length;
-knownCount.innerText=known.length;
-}
-
-function deleteWord(type,i){
-if(type==="store") store.splice(i,1);
-if(type==="learning") learning.splice(i,1);
-if(type==="known") known.splice(i,1);
-save();
-render();
-}
-
-function show(type){
-storeEl.style.display="none";
-learningEl.style.display="none";
-knownEl.style.display="none";
-
-if(type==="store") storeEl.style.display="block";
-if(type==="learning") learningEl.style.display="block";
-if(type==="known") knownEl.style.display="block";
-
-render();
-}
-
-function moveToLearning(i){
-learning.unshift(store[i]);
-store.splice(i,1);
-save();render();
-}
-
-function moveToKnown(i){
-known.unshift(learning[i]);
-learning.splice(i,1);
-save();render();
-}
-
-function backToStore(i){
-store.unshift(learning[i]);
-learning.splice(i,1);
-save();render();
-}
-
-function backFromKnown(i){
-store.unshift(known[i]);
-known.splice(i,1);
-save();render();
-}
-
-function speak(text){
-let msg=new SpeechSynthesisUtterance(text);
-msg.lang="es-ES";
-speechSynthesis.speak(msg);
-}
-
-function render(){
-
-let search = document.getElementById("searchInput").value.toLowerCase();
-
-storeEl.innerHTML="";
-learningEl.innerHTML="";
-knownEl.innerHTML="";
-
-store.filter(w =>
-w.kreyol.toLowerCase().includes(search) ||
-w.espanol.toLowerCase().includes(search)
-).forEach((w,i)=>{
-
-storeEl.innerHTML+=`
-<div class="card">
-<button class="delete-btn" onclick="deleteWord('store',${i})">🗑️</button>
-<div class="word">${w.kreyol}</div>
-<div class="translation">${w.espanol}</div>
-<div class="actions">
-<button class="sound-btn" onclick="speak('${w.espanol}')">🔊 Koute</button>
-<button class="learn-btn" onclick="moveToLearning(${i})">📚 Aprann</button>
-</div>
-</div>`;
-});
-
-learning.forEach((w,i)=>{
-learningEl.innerHTML+=`
-<div class="card">
-<button class="delete-btn" onclick="deleteWord('learning',${i})">🗑️</button>
-<div class="word">${w.kreyol}</div>
-<div class="translation">${w.espanol}</div>
-<div class="actions">
-<button class="sound-btn" onclick="speak('${w.espanol}')">🔊 Koute</button>
-<button class="learn-btn" onclick="moveToKnown(${i})">✅Fini</button>
-<button class="back-btn" onclick="backToStore(${i})">📚Magazen</button>
-</div>
-</div>`;
-});
-
-known.forEach((w,i)=>{
-knownEl.innerHTML+=`
-<div class="card">
-<button class="delete-btn" onclick="deleteWord('known',${i})">🗑️</button>
-<div class="word">${w.kreyol}</div>
-<div class="translation">${w.espanol}</div>
-<div class="actions">
-<button class="sound-btn" onclick="speak('${w.espanol}')">🔊 Koute</button>
-<button class="back-btn" onclick="backFromKnown(${i})">Magazen</button>
-</div>
-</div>`;
-});
-
-updateStats();
-}
-
-let storeEl=document.getElementById("store");
-let learningEl=document.getElementById("learning");
-let knownEl=document.getElementById("known");
-
-updateStats();
-render();
-
-</script>
+        // Louvri paj la ak done ki deja ladan yo pa defo
+        window.onload = updateCard;
+    </script>
 
 </body>
 </html>
